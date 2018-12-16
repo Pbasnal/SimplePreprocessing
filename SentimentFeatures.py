@@ -1,6 +1,9 @@
 import numpy as np
 import random
 import pickle
+
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from collections import Counter
 
 lemmatizer = WordNetLemmatizer()
@@ -52,12 +55,24 @@ def create_feature_sets_and_labels(pos, neg, test_size=0.1):
     features += sample_handling('neg.txt', lexicon, [0, 1])
     random.shuffle(features)
 
+    features = np.array(features)
+
+    testing_size = int(test_size * len(features))
+
+    train_x = list(features[:, 0][:-testing_size])
+    train_y = list(features[:, 1][:-testing_size])
+
+    # this seems wrong
+    test_x = list(features[:, 0][:-testing_size])
+    test_y = list(features[:, 1][:-testing_size])
+
+    return train_x, train_y, test_x, test_y
 
 
-
-
-
-
+if __name__ == '__main__':
+    train_x, train_y, test_x, test_y = create_feature_sets_and_labels('pos.txt', 'neg.txt')
+    with open('sentiment_set.pickle', 'wb') as f:
+        pickle.dump([train_x, train_y, test_x, test_y], f)
 
 
 
